@@ -1,0 +1,82 @@
+---
+---
+
+<button
+  id="ganti-tema"
+  type="button"
+  aria-label="Ganti mode gelap/terang"
+  class="relative grid size-9 shrink-0 place-items-center rounded-full border border-plum/15 bg-shell/50 text-plum-soft transition-colors hover:bg-shell dark:border-plum/25 dark:bg-shell/60"
+>
+  <svg
+    class="icon-sun size-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 3v1.5M12 19.5V21M4.6 4.6l1.06 1.06M18.34 18.34l1.06 1.06M3 12h1.5M19.5 12H21M4.6 19.4l1.06-1.06M18.34 5.66l1.06-1.06"
+    ></path>
+  </svg>
+  <svg
+    class="icon-moon absolute size-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"></path>
+  </svg>
+</button>
+
+<style>
+  .icon-sun,
+  .icon-moon {
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+  .icon-moon {
+    opacity: 0;
+    transform: scale(0.5) rotate(-90deg);
+  }
+  :global(html[data-theme='dark']) .icon-sun {
+    opacity: 0;
+    transform: scale(0.5) rotate(90deg);
+  }
+  :global(html[data-theme='dark']) .icon-moon {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .icon-sun,
+    .icon-moon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const KEY = 'jadwal-theme';
+  const btn = document.getElementById('ganti-tema');
+
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem(KEY, next);
+    } catch (e) {
+      // localStorage tidak tersedia — tema tetap berubah untuk sesi ini
+    }
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', next === 'dark' ? '#1c0f16' : '#fbf4f1');
+  });
+</script>

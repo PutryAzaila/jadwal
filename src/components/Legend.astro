@@ -1,0 +1,21 @@
+---
+import { jadwal } from '../data/schedule';
+
+const jumlahKuliah = jadwal.filter((s) => s.tipe === 'kuliah').length;
+const jumlahAsistensi = jadwal.filter((s) => s.tipe === 'asistensi').length;
+---
+
+<ul class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-plum-soft">
+  <li class="flex items-center gap-2">
+    <span
+      class="inline-block size-3 rounded-[4px] border border-kuliah-line bg-kuliah-bg"
+      aria-hidden="true"></span>
+    <span>Kuliah &middot; <span class="tabular-nums">{jumlahKuliah}</span></span>
+  </li>
+  <li class="flex items-center gap-2">
+    <span
+      class="inline-block size-3 rounded-[4px] border border-asistensi-line bg-asistensi-bg"
+      aria-hidden="true"></span>
+    <span>Asistensi praktikum &middot; <span class="tabular-nums">{jumlahAsistensi}</span></span>
+  </li>
+</ul>

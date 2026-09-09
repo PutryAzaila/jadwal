@@ -1,0 +1,179 @@
+---
+import Base from '../layouts/Base.astro';
+import WeekGrid from '../components/WeekGrid.astro';
+import AgendaList from '../components/AgendaList.astro';
+import Legend from '../components/Legend.astro';
+import StatusBar from '../components/StatusBar.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { HARI, TOTAL_SESI } from '../data/schedule';
+---
+
+<Base title="Jadwal · Azaila Putri">
+  <div class="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-14 lg:py-16">
+    <header class="relative mb-10 overflow-hidden sm:mb-12">
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-10 -top-16 -z-10 size-56 rounded-full bg-rose/20 blur-3xl dark:bg-rose/10"
+      ></span>
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -left-16 top-10 -z-10 size-48 rounded-full bg-kuliah-line/25 blur-3xl dark:bg-kuliah-line/12"
+      ></span>
+
+      <div class="flex items-start justify-between gap-4">
+        <p
+          class="flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-rose"
+        >
+          <span class="inline-block h-px w-8 bg-rose/50 dark:bg-rose/35"></span>
+          Semester Ganjil 2025 / 2026
+        </p>
+        <ThemeToggle />
+      </div>
+
+      <h1
+        class="font-display mt-4 text-4xl font-semibold leading-[1.05] tracking-tight text-plum sm:text-5xl lg:text-6xl"
+      >
+        Jadwal Kuliah<br />
+        <span class="text-rose">&amp; Asistensi</span>
+      </h1>
+
+      <p class="mt-4 max-w-md text-plum-soft">
+        Azaila Putri &middot; S1 Sistem Informasi
+        <span class="font-mono text-[0.85em]">PS1SI-08-REG-01</span>
+      </p>
+
+      <StatusBar />
+
+      <div
+        class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-plum/12 pt-6 dark:border-plum/20"
+      >
+        <Legend />
+        <span class="text-sm text-plum-soft/80 dark:text-plum-soft/90">
+          <span class="tabular-nums">{TOTAL_SESI}</span> sesi &middot;
+          <span class="tabular-nums">{HARI.length}</span> hari
+        </span>
+      </div>
+    </header>
+
+    <div
+      id="tampilan"
+      class="flex items-center justify-between gap-4"
+      data-view="auto"
+    >
+      <h2
+        class="font-display text-lg font-semibold tracking-tight text-plum-soft"
+      >
+        Minggu Ini
+      </h2>
+      <div
+        id="pengalih"
+        class="hidden items-center gap-1 rounded-full border border-plum/15 bg-shell/50 p-1 text-xs font-semibold dark:border-plum/25 dark:bg-shell/60"
+      >
+        <button
+          type="button"
+          data-target="grid"
+          class="rounded-full px-3 py-1.5 tracking-wide text-plum-soft transition-colors"
+        >
+          Kisi
+        </button>
+        <button
+          type="button"
+          data-target="agenda"
+          class="rounded-full px-3 py-1.5 tracking-wide text-plum-soft transition-colors"
+        >
+          Agenda
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div id="view-grid" class="hidden md:block">
+        <WeekGrid />
+      </div>
+      <div id="view-agenda" class="md:hidden">
+        <AgendaList />
+      </div>
+    </div>
+
+    <footer
+      class="mt-14 border-t border-plum/12 pt-6 text-xs text-plum-soft/70 dark:border-plum/20 dark:text-plum-soft/80"
+    >
+      Warna menandai jenis sesi,
+      bukan status bentrok.
+    </footer>
+  </div>
+
+  <style>
+    #tampilan[data-view='grid'] #view-grid {
+      display: block;
+    }
+    #tampilan[data-view='grid'] #view-agenda {
+      display: none;
+    }
+    #tampilan[data-view='agenda'] #view-grid {
+      display: none;
+    }
+    #tampilan[data-view='agenda'] #view-agenda {
+      display: block;
+    }
+    #pengalih button[data-active='true'] {
+      background-color: var(--color-plum);
+      color: var(--color-cream);
+    }
+    :global([data-hari][data-today]) {
+      background-color: var(--color-plum);
+      color: var(--color-cream);
+    }
+    :global([data-hari-col][data-today]) {
+      background-color: color-mix(in oklab, var(--color-rose) 9%, transparent);
+    }
+    :global([data-hari-section][data-today] h2) {
+      color: var(--color-rose-deep);
+    }
+    :global([data-hari-section][data-today] h2::after) {
+      content: ' · hari ini';
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-rose);
+    }
+  </style>
+
+  <script>
+    import { HARI_PENUH } from '../data/schedule';
+
+    const wrap = document.getElementById('tampilan');
+    const bar = document.getElementById('pengalih');
+    if (wrap && bar) {
+      const buttons = Array.from(
+        bar.querySelectorAll<HTMLButtonElement>('button[data-target]'),
+      );
+      const mq = window.matchMedia('(min-width: 768px)');
+
+      const sync = (view: 'grid' | 'agenda') => {
+        wrap.dataset.view = view;
+        buttons.forEach((b) => {
+          b.dataset.active = String(b.dataset.target === view);
+        });
+      };
+
+      bar.classList.remove('hidden');
+      bar.classList.add('flex');
+      sync(mq.matches ? 'grid' : 'agenda');
+
+      buttons.forEach((b) => {
+        b.addEventListener('click', () =>
+          sync(b.dataset.target as 'grid' | 'agenda'),
+        );
+      });
+    }
+
+    // Tandai hari ini
+    const hariIni = HARI_PENUH[new Date().getDay()];
+    document
+      .querySelectorAll(
+        `[data-hari="${hariIni}"]:not(article), [data-hari-col="${hariIni}"], [data-hari-section="${hariIni}"]`,
+      )
+      .forEach((el) => el.setAttribute('data-today', ''));
+  </script>
+</Base>

@@ -1,0 +1,15 @@
+{
+  "name": "Jadwal Kuliah & Asistensi",
+  "short_name": "Jadwal",
+  "description": "Jadwal kuliah dan asistensi praktikum semester ganjil 2025/2026.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fbf4f1",
+  "theme_color": "#fbf4f1",
+  "lang": "id",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

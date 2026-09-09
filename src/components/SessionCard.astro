@@ -1,0 +1,170 @@
+---
+import type { Sesi } from '../data/schedule';
+import { LABEL_TIPE, idSesi } from '../data/schedule';
+
+interface Props {
+  sesi: Sesi;
+  /** true di dalam grid mingguan (tinggi mengikuti durasi, teks lebih ringkas) */
+  compact?: boolean;
+  /** urutan kemunculan, dipakai untuk delay animasi masuk bertahap */
+  stagger?: number;
+}
+
+const { sesi, compact = false, stagger = 0 } = Astro.props;
+const isKuliah = sesi.tipe === 'kuliah';
+
+const skin = isKuliah
+  ? 'bg-kuliah-bg border-kuliah-line'
+  : 'bg-asistensi-bg border-asistensi-line';
+---
+
+<article
+  data-sesi-id={idSesi(sesi)}
+  style={`--stagger:${stagger}`}
+  class:list={[
+    'group relative flex h-full flex-col overflow-hidden rounded-xl border text-plum transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md',
+    skin,
+    compact ? 'p-3' : 'p-4 sm:p-5',
+  ]}
+>
+  {/* garis aksen kiri */}
+  <span
+    class:list={[
+      'absolute inset-y-0 left-0 w-1 transition-all duration-200 group-hover:w-1.5',
+      isKuliah ? 'bg-rose/70 dark:bg-rose/60' : 'bg-rose-deep',
+    ]}
+    aria-hidden="true"></span>
+
+  <header class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+    <span class="flex items-center gap-1.5">
+      <span class="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-plum-soft">
+        {LABEL_TIPE[sesi.tipe]}
+      </span>
+      <span class="live-badge hidden items-center gap-1 whitespace-nowrap rounded-full bg-rose-deep px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-cream">
+        <span class="live-dot size-1.5 shrink-0 rounded-full bg-cream"></span>
+        Berlangsung
+      </span>
+    </span>
+    {
+      sesi.kode && (
+        <span class="shrink-0 font-mono text-[0.62rem] tracking-tight text-plum-soft/80 dark:text-plum-soft/90">
+          {sesi.kode}
+        </span>
+      )
+    }
+  </header>
+
+  <h3
+    class:list={[
+      'font-display font-semibold leading-tight tracking-tight text-plum',
+      compact ? 'mt-1 text-[0.95rem]' : 'mt-1.5 text-lg sm:text-xl',
+    ]}
+  >
+    {sesi.mataKuliah}
+  </h3>
+
+  <dl
+    class:list={[
+      'mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-3 text-plum-soft',
+      compact ? 'text-[0.72rem]' : 'text-sm',
+    ]}
+  >
+    <div class="flex items-center gap-1.5">
+      <dt class="sr-only">Waktu</dt>
+      <svg
+        class="size-3.5 shrink-0 opacity-70 transition-transform duration-200 group-hover:scale-110"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M12 7v5l3 2"></path>
+      </svg>
+      <dd class="tabular-nums">{sesi.mulai}&ndash;{sesi.selesai}</dd>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <dt class="sr-only">Ruang</dt>
+      <svg
+        class="size-3.5 shrink-0 opacity-70 transition-transform duration-200 group-hover:scale-110"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z"></path>
+        <circle cx="12" cy="10" r="2.5"></circle>
+      </svg>
+      <dd>{sesi.ruang}</dd>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <dt class="sr-only">Kelas</dt>
+      <dd class="font-mono text-[0.9em] tracking-tight">{sesi.kelas}</dd>
+    </div>
+  </dl>
+</article>
+
+<style>
+  article {
+    animation: sesi-masuk 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--stagger, 0) * 60ms);
+  }
+  @keyframes sesi-masuk {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  article[data-live] {
+    animation:
+      sesi-masuk 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards,
+      sesi-berdenyut 2.4s ease-in-out infinite;
+  }
+  @keyframes sesi-berdenyut {
+    0%,
+    100% {
+      box-shadow: 0 0 0 2px var(--color-rose);
+    }
+    50% {
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-rose) 45%, transparent);
+    }
+  }
+  article[data-live] .live-badge {
+    display: inline-flex;
+  }
+  article[data-live] .live-dot {
+    animation: badge-berkedip 1.4s ease-in-out infinite;
+  }
+  @keyframes badge-berkedip {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    article {
+      animation: none;
+    }
+    article[data-live] {
+      animation: none;
+      box-shadow: 0 0 0 2px var(--color-rose);
+    }
+    article[data-live] .live-dot {
+      animation: none;
+    }
+  }
+</style>

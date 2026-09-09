@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/hanken-grotesk';
+
+@theme {
+  --font-sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+
+  /* Palet pink modern — blush, plum, rose */
+  --color-cream: #fbf4f1;
+  --color-shell: #f5e7e1;
+  --color-plum: #3b1e2b;
+  --color-plum-soft: #6b4453;
+  --color-rose: #c24e72;
+  --color-rose-deep: #9c3358;
+
+  /* Kartu kuliah */
+  --color-kuliah-bg: #f6e2dc;
+  --color-kuliah-line: #e0b3a9;
+
+  /* Kartu asistensi */
+  --color-asistensi-bg: #ecc9d9;
+  --color-asistensi-line: #cd8fac;
+}
+
+/* Strategi dark mode manual (bukan prefers-color-scheme) via atribut data-theme */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  color-scheme: light;
+  /* tinggi 1 baris 30-menit pada grid mingguan */
+  --slot-h: 2.5rem;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-cream: #1c0f16;
+  --color-shell: #2b1622;
+  --color-plum: #f6e7ec;
+  --color-plum-soft: #cda6b7;
+  --color-rose: #f28fb0;
+  --color-rose-deep: #ff9dc2;
+
+  --color-kuliah-bg: #3a2430;
+  --color-kuliah-line: #6e4256;
+
+  --color-asistensi-bg: #3d2436;
+  --color-asistensi-line: #7a3f63;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --slot-h: 2.9rem;
+  }
+}
+
+html {
+  background-color: var(--color-cream);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+}
+
+/* Transisi warna halus saat ganti tema — dibatasi ke elemen yang benar-benar berganti warna. */
+html,
+body,
+header,
+article,
+button {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  header,
+  article,
+  button {
+    transition: none;
+  }
+}
+
+/* Fraunces: aktifkan optical sizing untuk judul */
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+::selection {
+  background-color: var(--color-rose);
+  color: var(--color-cream);
+}

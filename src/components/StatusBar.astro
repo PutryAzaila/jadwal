@@ -1,0 +1,70 @@
+---
+---
+
+<p
+  id="status-langsung"
+  hidden
+  aria-live="polite"
+  class="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-plum/15 bg-shell/60 px-3 py-1.5 text-sm font-medium text-plum-soft dark:border-plum/25 dark:bg-shell/70"
+>
+  <span class="status-titik size-2 shrink-0 rounded-full bg-plum-soft/50" aria-hidden="true"></span>
+  <span id="status-teks"></span>
+</p>
+
+<style>
+  #status-langsung[data-status='berlangsung'] {
+    border-color: transparent;
+    background-color: var(--color-rose-deep);
+    color: var(--color-cream);
+  }
+  #status-langsung[data-status='berlangsung'] .status-titik {
+    background-color: var(--color-cream);
+    animation: status-berdenyut 1.8s ease-in-out infinite;
+  }
+  @keyframes status-berdenyut {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #status-langsung[data-status='berlangsung'] .status-titik {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { statusSaatIni, idSesi, formatDurasi, formatMenunggu } from '../data/schedule';
+
+  const el = document.getElementById('status-langsung');
+  const teks = document.getElementById('status-teks');
+
+  function tick() {
+    if (!el || !teks) return;
+    const s = statusSaatIni();
+
+    document.querySelectorAll('[data-sesi-id]').forEach((n) => n.removeAttribute('data-live'));
+    el.dataset.status = s.status;
+
+    if (s.status === 'berlangsung' && s.sesi) {
+      teks.textContent = `Sedang berlangsung: ${s.sesi.mataKuliah} · berakhir jam ${s.sesi.selesai} (${formatDurasi(s.menit)} lagi)`;
+      document.querySelector(`[data-sesi-id="${CSS.escape(idSesi(s.sesi))}"]`)?.setAttribute('data-live', '');
+    } else if (s.status === 'menunggu' && s.sesi) {
+      teks.textContent = `Selanjutnya: ${s.sesi.mataKuliah} ${formatMenunggu(s)}`;
+    } else {
+      teks.textContent = 'Tidak ada sesi terjadwal untuk saat ini.';
+    }
+
+    el.hidden = false;
+  }
+
+  tick();
+  setInterval(tick, 30_000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) tick();
+  });
+</script>

@@ -1,0 +1,93 @@
+---
+import SessionCard from './SessionCard.astro';
+import {
+  HARI,
+  JAM_LABEL,
+  SLOT_MULAI,
+  SLOT_MENIT,
+  TOTAL_SLOT,
+  jadwal,
+  menitDari,
+} from '../data/schedule';
+
+function rowStart(mulai: string) {
+  return (menitDari(mulai) - SLOT_MULAI) / SLOT_MENIT + 2;
+}
+function rowEnd(selesai: string) {
+  return (menitDari(selesai) - SLOT_MULAI) / SLOT_MENIT + 2;
+}
+---
+
+<div class="-mx-1 overflow-x-auto px-1 pb-2">
+  <div
+    class="grid min-w-[48rem] rounded-2xl border border-plum/12 bg-cream p-2 sm:p-3 dark:border-plum/20"
+    style={`
+      grid-template-columns: 3.5rem repeat(${HARI.length}, minmax(8.5rem, 1fr));
+      grid-template-rows: auto repeat(${TOTAL_SLOT}, var(--slot-h, 2.5rem));
+    `}
+  >
+    <div class="sticky left-0 z-20 bg-cream" style="grid-column:1;grid-row:1"></div>
+
+    {/* header hari */}
+    {
+      HARI.map((h, i) => (
+        <div
+          data-hari={h}
+          class="mx-0.5 mb-1 flex items-end justify-center rounded-md pb-2 pt-1 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-plum-soft transition-colors"
+          style={`grid-column:${i + 2};grid-row:1`}
+        >
+          {h}
+        </div>
+      ))
+    }
+
+    {/* garis pemisah antar hari */}
+    {
+      HARI.map((h, i) => (
+        <div
+          data-hari-col={h}
+          class="pointer-events-none border-l border-plum/8 dark:border-plum/15"
+          style={`grid-column:${i + 2};grid-row:2 / -1`}
+          aria-hidden="true"
+        />
+      ))
+    }
+
+    {/* label jam + garis jam */}
+    {
+      JAM_LABEL.map((jam, i) => {
+        const gr = i * 2 + 2;
+        return (
+          <>
+            <div
+              class="sticky left-0 z-10 -translate-y-1.5 bg-cream pr-2 text-right font-mono text-[0.66rem] tabular-nums text-plum-soft/75 dark:text-plum-soft/85"
+              style={`grid-column:1;grid-row:${gr}`}
+            >
+              {jam}
+            </div>
+            <div
+              class="pointer-events-none border-t border-dashed border-plum/12 dark:border-plum/20"
+              style={`grid-column:2 / -1;grid-row:${gr}`}
+              aria-hidden="true"
+            />
+          </>
+        );
+      })
+    }
+
+    {/* sesi */}
+    {
+      jadwal.map((sesi, i) => {
+        const col = HARI.indexOf(sesi.hari) + 2;
+        return (
+          <div
+            class="p-[3px]"
+            style={`grid-column:${col};grid-row:${rowStart(sesi.mulai)} / ${rowEnd(sesi.selesai)}`}
+          >
+            <SessionCard sesi={sesi} stagger={i} compact />
+          </div>
+        );
+      })
+    }
+  </div>
+</div>
