@@ -1,4 +1,3 @@
-# Jadwal Kuliah & Asistensi — Semester Ganjil 2025/2026
 
 ## Menjalankan
 
