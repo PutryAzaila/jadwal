@@ -1,8 +1,5 @@
 # Jadwal Kuliah & Asistensi — Semester Ganjil 2025/2026
 
-Halaman jadwal pribadi (Siska Yulianti · PS1SI-08-REG-01), tema pink modern,
-responsif. Dibuat dengan **Astro + Tailwind CSS v4**.
-
 ## Menjalankan
 
 ```bash
